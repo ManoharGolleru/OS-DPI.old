@@ -2,7 +2,7 @@ import { html } from "uhtml";
 import * as Props from "./props";
 import { Stack } from "./stack";
 import { styleString } from "./style";
-import "../css/tabcontrol.css";
+import "css/tabcontrol.css";
 import Globals from "app/globals";
 import { TreeBase } from "./treebase";
 import { callAfterRender } from "app/render";

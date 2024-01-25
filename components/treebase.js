@@ -1,6 +1,6 @@
 import { html } from "uhtml";
 import * as Props from "./props";
-import "../css/treebase.css";
+import "css/treebase.css";
 import WeakValue from "weak-value";
 import { styleString } from "./style";
 import { session } from "./persist";

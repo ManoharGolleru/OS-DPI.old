@@ -3,7 +3,7 @@ import { TreeBase } from "./treebase";
 import { DesignerPanel } from "./designer";
 import * as Props from "./props";
 import db from "app/db";
-import "../css/content.css";
+import "css/content.css";
 import pleaseWait from "./wait";
 import Globals from "app/globals";
 

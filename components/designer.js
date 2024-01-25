@@ -1,4 +1,4 @@
-import "../css/tabcontrol.css";
+import "css/tabcontrol.css";
 import { html } from "uhtml";
 import Globals from "app/globals";
 import { callAfterRender } from "app/render";

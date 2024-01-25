@@ -2,7 +2,7 @@ import { html } from "uhtml";
 import { TreeBase } from "./treebase";
 import * as Props from "./props";
 import { styleString } from "./style";
-import "../css/vsd.css";
+import "css/vsd.css";
 import Globals from "app/globals";
 import { GridFilter } from "./gridFilter";
 import { imageOrVideo } from "./grid";

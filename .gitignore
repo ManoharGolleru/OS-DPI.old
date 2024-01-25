@@ -1,6 +1,5 @@
-node_modules/
-package-lock.json
+**/node_modules/
+**/package-lock.json
 .~lock.*
-docs/
-thinking/wiki
-
+dist/
+thinking/wiki/
