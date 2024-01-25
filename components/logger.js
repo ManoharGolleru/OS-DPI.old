@@ -150,3 +150,31 @@ export async function SaveLogs() {
 export async function ClearLogs() {
   await db.clear("log");
 }
+
+export async function DownloadCSV() {
+  const serverUrl = 'http://172.20.10.3:5678/download_csv'; // Adjust if your client and server are on different machines
+  fetch(serverUrl)
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok ' + response.statusText);
+          }
+          return response.blob();
+      })
+      .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'conversation_history.csv'; // Set the desired file name for the download
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+      })
+      .catch(error => {
+          console.error('Error downloading CSV:', error);
+          // Optionally, update the UI to show an error message to the user
+          // For example, show a modal or a toast notification indicating the download failure
+      });
+}
+
+

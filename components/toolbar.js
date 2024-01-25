@@ -15,7 +15,7 @@ import { DB } from "app/db";
 import { Designer } from "./designer";
 import { readSheetFromBlob, saveContent } from "./content";
 import { Data } from "app/data";
-import { SaveLogs, ClearLogs } from "./logger";
+import { SaveLogs, ClearLogs, DownloadCSV } from "./logger";
 import { friendlyName, wikiName } from "./names";
 
 import { workerUpdateButton } from "components/serviceWorker";
@@ -327,6 +327,15 @@ function getFileMenuItems(bar) {
         ClearLogs();
       },
     }),
+    new MenuItem({
+      label: "Download CSV",
+      title: "Download the conversation history as CSV",
+      divider: "Logs",
+      callback: async () => {
+          DownloadCSV(); // Replace with your actual function name for downloading CSV
+      },
+  }),
+  
   ];
 }
 
