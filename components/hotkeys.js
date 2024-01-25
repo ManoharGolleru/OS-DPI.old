@@ -1,7 +1,7 @@
 /** Global Hot Keys for keyboard access */
 
 import Globals from "app/globals";
-import "css/hotkeys.css";
+import "../css/hotkeys.css";
 
 function showHints() {
   document.body.classList.add("hints");

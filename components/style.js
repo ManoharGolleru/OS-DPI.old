@@ -1,5 +1,5 @@
 import { html, render } from "uhtml";
-import "css/style.css";
+import "../css/style.css";
 import { ColorNames } from "./color-names";
 
 /** @param {Event & { target: HTMLInputElement }} event

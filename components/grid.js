@@ -5,7 +5,7 @@ import { GridFilter } from "./gridFilter";
 import { styleString } from "./style";
 import { formatSlottedString } from "./helpers";
 import Globals from "app/globals";
-import "css/grid.css";
+import "../css/grid.css";
 
 /**
  * Return an image or video element given the name + parameters

@@ -3,7 +3,7 @@ import { TreeBase } from "./treebase";
 import * as Props from "./props";
 import { Functions } from "app/eval";
 import merge from "mergerino";
-import "css/display.css";
+import "../css/display.css";
 import Globals from "app/globals";
 
 /** Slot descriptor

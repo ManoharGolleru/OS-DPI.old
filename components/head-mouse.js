@@ -1,7 +1,7 @@
 import { TreeBase } from "./treebase";
 import * as Props from "./props";
 import { TrackyMouse } from "../public/tracky-mouse/tracky-mouse";
-import "css/tracky-mouse.css";
+import "../css/tracky-mouse.css";
 import Globals from "app/globals";
 
 class HeadMouse extends TreeBase {

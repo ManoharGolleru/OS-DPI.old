@@ -2,7 +2,7 @@ import { html } from "uhtml";
 import { TreeBase } from "./treebase";
 import * as Props from "./props";
 import { styleString } from "./style";
-import "css/button.css";
+import "../css/button.css";
 
 class Button extends TreeBase {
   label = new Props.String("click me");
