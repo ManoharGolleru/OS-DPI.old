@@ -3,7 +3,7 @@ import { Stack } from "./stack";
 import { PatternGroup } from "components/access/pattern";
 import { Page } from "components/page";
 
-import "css/toolbar.css";
+import "../css/toolbar.css";
 import db from "app/db";
 import { html } from "uhtml";
 import Globals from "app/globals";
