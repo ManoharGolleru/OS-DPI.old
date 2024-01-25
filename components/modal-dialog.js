@@ -1,7 +1,7 @@
 import { html } from "uhtml";
 import { TreeBase } from "./treebase";
 import * as Props from "./props";
-import "../css/modal-dialog.css";
+import "css/modal-dialog.css";
 
 import Globals from "app/globals";
 

@@ -5,7 +5,7 @@ import db from "app/db";
 import * as Props from "./props";
 import Globals from "app/globals";
 import { access } from "app/eval";
-import "../css/logger.css";
+import "css/logger.css";
 
 export class Logger extends TreeBase {
   // name = new Props.String("Log");

@@ -2,7 +2,7 @@ import { html } from "uhtml";
 import { TreeBase } from "./treebase";
 import * as Props from "./props";
 import { DesignerPanel } from "./designer";
-import "../css/actions.css";
+import "css/actions.css";
 import Globals from "app/globals";
 import { Functions } from "app/eval";
 

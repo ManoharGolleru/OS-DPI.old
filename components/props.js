@@ -1,7 +1,7 @@
 /* Thinking about better properties */
 
 import { html } from "uhtml";
-import "../css/props.css";
+import "css/props.css";
 import { compileExpression } from "app/eval";
 import Globals from "app/globals";
 import { TreeBaseSwitchable } from "./treebase";

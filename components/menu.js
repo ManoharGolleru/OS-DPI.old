@@ -4,7 +4,7 @@
  */
 
 import { html } from "uhtml";
-import "../css/menu.css";
+import "css/menu.css";
 import Globals from "app/globals";
 import { callAfterRender } from "app/render";
 

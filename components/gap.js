@@ -1,7 +1,7 @@
 import { TreeBase } from "./treebase";
 import * as Props from "./props";
 import { styleString } from "./style";
-import "../css/gap.css";
+import "css/gap.css";
 
 class Gap extends TreeBase {
   scale = new Props.Float(1);

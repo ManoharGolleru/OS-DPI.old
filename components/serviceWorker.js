@@ -1,7 +1,7 @@
 // Interface to the service worker for offline
 
 import { html } from "uhtml";
-import "../css/serviceWorker.css";
+import "css/serviceWorker.css";
 
 /** A pointer to the service worker
  * @type {ServiceWorkerRegistration} */

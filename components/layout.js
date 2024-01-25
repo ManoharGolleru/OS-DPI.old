@@ -1,7 +1,7 @@
 import { html } from "uhtml";
 import { TreeBase } from "./treebase";
 import { DesignerPanel } from "./designer";
-import "../css/layout.css";
+import "css/layout.css";
 import db from "app/db";
 import Globals from "app/globals";
 import { TabPanel } from "./tabcontrol";
