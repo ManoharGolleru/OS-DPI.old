@@ -152,7 +152,7 @@ export async function ClearLogs() {
 }
 
 export async function DownloadCSV() {
-  const serverUrl = 'http://172.20.10.3:5678/download_csv'; // Adjust if your client and server are on different machines
+  const serverUrl = 'http://172.20.10.5:5678/download_csv'; // Adjust if your client and server are on different machines
   fetch(serverUrl)
       .then(response => {
           if (!response.ok) {

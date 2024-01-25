@@ -5,6 +5,7 @@ import Globals from "app/globals";
 import * as Props from "./props";
 
 class Speech extends TreeBase {
+  // Assuming these are initial default values
   stateName = new Props.String("$Speak");
   voiceURI = new Props.Voice("", { label: "Voice" });
   Speaker1 = new Props.Float(1);
@@ -15,23 +16,73 @@ class Speech extends TreeBase {
 
   async speak() {
     const { state } = Globals;
-    const { stateName, Speaker1, Speaker2, pitch, rate, volume } = this.props;
-    const message = strip(state.get(stateName));
+    let { stateName, Speaker1, Speaker2, pitch, rate, volume } = this.props;
+    let message = strip(state.get(stateName));
     console.log(this.props.stateName); // Check if stateName has the expected value
-    console.log(this.props.Speaker1);  // Check if Speaker1 has the expected value
-    // Repeat for other properties
 
+    const messageComponents = message.split('|').map(component => component.trim());
+    const textMessage = messageComponents[0]; // "Hello, how are you today?"
+    let chunkParams = [];
+    let gapDurations = [];
 
+    // Extract global speaker and speech parameters if present
+    const paramsRegex = /\[(.*?)\]/;
+    const globalParamsMatches = paramsRegex.exec(messageComponents[1]);
+    if (globalParamsMatches && globalParamsMatches[1]) {
+        const params = globalParamsMatches[1].split(',').map(Number);
+        [Speaker1, Speaker2, pitch, rate, volume] = params;
+    }
+
+    // Extract chunk parameters if present
+    if (messageComponents.length > 2) {
+        const chunkParamString = messageComponents[2].replace(/\[|\]/g, ''); // Remove square brackets
+        const chunkParamGroups = chunkParamString.split(';'); // Split into groups
+        chunkParams = chunkParamGroups.map(group => group.split(',').map(Number));
+    }
+
+    // Extract gap durations if present
+    if (messageComponents.length > 3) {
+        const gapDurationsMatches = paramsRegex.exec(messageComponents[3]);
+        if (gapDurationsMatches && gapDurationsMatches[1]) {
+            gapDurations = gapDurationsMatches[1].split(',').map(Number);
+        }
+    }
+
+    // Ensure chunkParams array length matches the number of chunks in the text
+    const textChunks = textMessage.split(', ');
+    if (chunkParams.length < textChunks.length) {
+        // Fill in missing chunkParams with default values
+        const defaultChunkParam = [pitch, rate]; // Default values for pitch and rate
+        while (chunkParams.length < textChunks.length) {
+            chunkParams.push(defaultChunkParam);
+        }
+    }
+
+    // Ensure gapDurations array length is one less than the number of text chunks
+    if (gapDurations.length < textChunks.length - 1) {
+        // Fill in missing gapDurations with a default gap duration
+        const defaultGapDuration = 0.5; // Default value for gap duration
+        while (gapDurations.length < textChunks.length - 1) {
+            gapDurations.push(defaultGapDuration);
+        }
+    }
+
+    // Payload to be sent
     const payload = {
-      text: message,
-      Speaker1: Speaker1, // Access the value of Speaker1 property
-      Speaker2: Speaker2, // Access the value of Speaker2 property
-      pitch: pitch, // Access the value of pitch property
-      rate: rate, // Access the value of rate property
-      volume: volume, 
+        text: textMessage,
+        Speaker1,
+        Speaker2,
+        pitch,
+        rate,
+        volume,
+        chunkParams,
+        gapDurations
     };
-  
-    console.log("Sending payload:", payload);
+
+    console.log("Payload:", payload);
+
+
+
 
     // Send a request to the speech engine's /synthesize endpoint with the payload
     const response = await fetch('http://localhost:5000/synthesize', {
@@ -41,6 +92,8 @@ class Speech extends TreeBase {
         },
         body: JSON.stringify(payload), // Send the payload as JSON
     });
+
+    
 
     
     if (response.ok) {
@@ -56,6 +109,7 @@ class Speech extends TreeBase {
         });
     }
   }
+
 
 
 
