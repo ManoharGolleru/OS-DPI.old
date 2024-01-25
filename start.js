@@ -7,8 +7,6 @@ import { Monitor } from "./components/monitor";
 import { ToolBar } from "./components/toolbar";
 import db from "./db";
 import pleaseWait from "./components/wait";
-import "./css/designer.css";
-import "./css/colors.css";
 import { clearAccessChanged } from "./components/access";
 import Globals from "./globals";
 import { PatternList } from "./components/access/pattern";
