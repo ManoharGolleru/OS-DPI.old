@@ -20963,13 +20963,7 @@ function getFileMenuItems(bar) {
         SaveLogs();
       },
     }),
-    new MenuItem({
-      label: "Clear logs",
-      title: "Clear any stored logs",
-      callback: async () => {
-        ClearLogs();
-      },
-    }),
+
     new MenuItem({
       label: "Download CSV",
       title: "Download the conversation history as CSV",
@@ -20977,7 +20971,15 @@ function getFileMenuItems(bar) {
       callback: async () => {
           DownloadCSV(); // Replace with your actual function name for downloading CSV
       },
-  }),
+    }),
+    new MenuItem({
+      label: "Clear logs",
+      title: "Clear any stored logs",
+      divider: "Clear",
+      callback: async () => {
+        ClearLogs();
+      },
+    }),
   
   ];
 }
