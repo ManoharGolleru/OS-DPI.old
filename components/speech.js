@@ -1,8 +1,8 @@
+import { strip } from "./display";
 import { TreeBase } from "./treebase";
 import { html } from "uhtml";
 import Globals from "app/globals";
 import * as Props from "./props";
-import { toString } from "./slots";
 
 class Speech extends TreeBase {
   stateName = new Props.String("$Speak");
@@ -13,8 +13,8 @@ class Speech extends TreeBase {
 
   async speak() {
     const { state } = Globals;
-    const voiceURI = this.voiceURI.value;
-    const message = toString(state.get(this.stateName.value));
+    const { stateName, voiceURI, pitch, rate, volume } = this.props;
+    const message = strip(state.get(stateName));
     const voices = await getVoices();
     const voice =
       voiceURI && voices.find((voice) => voice.voiceURI == voiceURI);
@@ -23,20 +23,29 @@ class Speech extends TreeBase {
       utterance.voice = voice;
       utterance.lang = voice.lang;
     }
-    utterance.pitch = this.pitch.value;
-    utterance.rate = this.rate.value;
-    utterance.volume = this.volume.value;
+    utterance.pitch = pitch;
+    utterance.rate = rate;
+    utterance.volume = volume;
     speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
   }
 
   template() {
+    const { stateName } = this.props;
     const { state } = Globals;
-    if (state.hasBeenUpdated(this.stateName.value)) {
+    if (state.hasBeenUpdated(stateName)) {
       this.speak();
     }
-    return html`<div />`;
+    return this.empty;
   }
+
+  // settings() {
+  //   console.log("speech settings");
+  //   return html`<div class="Speech">
+  //     ${this.stateName.input()} ${this.voiceURI.input()} ${this.pitch.input()}
+  //     ${this.rate.input()} ${this.volume.input()}
+  //   </div>`;
+  // }
 }
 TreeBase.register(Speech, "Speech");
 
@@ -70,22 +79,13 @@ class VoiceSelect extends HTMLSelectElement {
 
   async addVoices() {
     const voices = await getVoices();
-    /** @param {SpeechSynthesisVoice} a
-     * @param {SpeechSynthesisVoice} b
-     */
-    function compareVoices(a, b) {
-      return a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name);
-    }
-    voices.sort(compareVoices);
     const current = this.getAttribute("value");
     for (const voice of voices) {
-      const item = document.createElement("option");
-      item.value = voice.voiceURI;
-      if (voice.voiceURI == current) item.setAttribute("selected", "");
-      item.innerText = `${voice.name} ${voice.lang}`;
-      this.add(item);
+      const item = html.node`<option value=${voice.voiceURI} ?selected=${
+        voice.voiceURI == current
+      }>${voice.name}</option>`;
+      this.add(/** @type {HTMLOptionElement} */ (item));
     }
   }
 }
 customElements.define("select-voice", VoiceSelect, { extends: "select" });
-
