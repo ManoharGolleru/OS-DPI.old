@@ -13,7 +13,7 @@ class Speech extends TreeBase {
   constructor() {
     super();
     this.speechConfig = sdk.SpeechConfig.fromSubscription('25d626bb957d4ae0801f224ed52e04dd', 'eastus');
-    this.speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Ogg16Khz16BitMonoOpus; // Set output format to raw PCM
+    this.speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3; // Using MP3 format with appropriate bitrate
     this.audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
     this.synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, this.audioConfig);
   }
@@ -60,6 +60,3 @@ class Speech extends TreeBase {
 }
 
 TreeBase.register(Speech, "Speech");
-
-
-
