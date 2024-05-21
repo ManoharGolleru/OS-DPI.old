@@ -3,7 +3,7 @@ import { TreeBase } from "./treebase";
 import { html } from "uhtml";
 import Globals from "app/globals";
 import * as Props from "./props";
-import { toString } from "./slots";
+
 
 class Speech extends TreeBase {
   stateName = new Props.String("$Speak");
