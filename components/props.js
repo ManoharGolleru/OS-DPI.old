@@ -702,6 +702,8 @@ export class Color extends Prop {
   }
 }
 
+
+
 export class Voice extends Prop {
   value = "";
 
@@ -719,6 +721,8 @@ export class Voice extends Prop {
         onchange=${(/** @type {InputEventWithTarget} */ event) => {
           this.value = event.target.value;
           this.update();
+          Globals.state.set("$VoiceURI", this.value); // Update the global state
+          console.log("Voice changed to:", this.value); // Debugging log
         }}
       >
         <option value="">Default</option>
@@ -728,6 +732,7 @@ export class Voice extends Prop {
     );
   }
 }
+
 
 
 export class ADate extends Prop {
