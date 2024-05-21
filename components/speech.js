@@ -16,6 +16,11 @@ class Speech extends TreeBase {
     this.speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3; // Using MP3 format with appropriate bitrate
     this.audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
     this.synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, this.audioConfig);
+
+    // Adding logging for debug purposes
+    this.synthesizer.synthesisStarted = (s, e) => console.log("Synthesis started");
+    this.synthesizer.synthesisCompleted = (s, e) => console.log("Synthesis completed");
+    this.synthesizer.synthesisCanceled = (s, e) => console.error("Synthesis canceled", e);
   }
 
   async speak() {
@@ -60,3 +65,5 @@ class Speech extends TreeBase {
 }
 
 TreeBase.register(Speech, "Speech");
+
+// Ensure there is no default export since it's not required
