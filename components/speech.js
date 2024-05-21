@@ -1,14 +1,15 @@
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
-import { strip } from "./display";
 import { TreeBase } from "./treebase";
 import { html } from "uhtml";
 import Globals from "app/globals";
 import * as Props from "./props";
+import { toString } from "./slots";
 
 class Speech extends TreeBase {
   stateName = new Props.String("$Speak");
   voiceURI = new Props.Voice("$VoiceURI", "en-US-GuyNeural"); // Default to Guy
   expressStyle = new Props.String("$ExpressStyle", "friendly"); // Default expression style
+  
 
   constructor() {
     super();
@@ -25,9 +26,9 @@ class Speech extends TreeBase {
 
   async speak() {
     const { state } = Globals;
-    const message = state.get("$Speak");
+    const message = toString(state.get(this.stateName.value));
     const voice = state.get("$VoiceURI") || "en-US-GuyNeural"; // Default to "en-US-GuyNeural" if no voice is set
-    const style = state.get("$ExpressStyle") || "friendly";
+    const style = this.expressStyle.value;
 
     console.log("Using voice:", voice); // Debugging log
     console.log("Message:", message); // Debugging log
@@ -58,13 +59,12 @@ class Speech extends TreeBase {
   }
 
   template() {
-    const { stateName, voiceURI } = this.props;
     const { state } = Globals;
-    if (state.hasBeenUpdated(stateName) || state.hasBeenUpdated(voiceURI)) {
+    if (state.hasBeenUpdated(this.stateName.value) || state.hasBeenUpdated(this.voiceURI.value)) {
       console.log("State updated, speaking now..."); // Debugging log
       this.speak();
     }
-    return this.empty;
+    return html`<div />`;
   }
 }
 
