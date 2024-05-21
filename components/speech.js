@@ -7,8 +7,8 @@ import * as Props from "./props";
 
 class Speech extends TreeBase {
   stateName = new Props.String("$Speak");
-  voiceURI = new Props.Voice("$VoiceURI", "en-US-GuyNeural"); // Dynamically updated voice URI
-  expressStyle = new Props.String("$ExpressStyle", "friendly"); // Dynamically updated expression style
+  voiceURI = new Props.Voice("$VoiceURI", "en-US-GuyNeural"); // Default voice URI
+  expressStyle = new Props.String("$ExpressStyle", "friendly"); // Default expression style
 
   constructor() {
     super();
@@ -19,11 +19,9 @@ class Speech extends TreeBase {
 
   async speak() {
     const { state } = Globals;
-
-    // Directly use the strings defined in the constructor for keys
-    const message = state.get("$Speak");  // Use the key directly
-    const voice = state.get("$VoiceURI") || "en-US-GuyNeural"; // Use the key directly
-    const style = state.get("$ExpressStyle") || "friendly";  // Use the key directly
+    const message = state.get("$Speak");
+    const voice = state.get("$VoiceURI") || "en-US-GuyNeural"; // Default to "en-US-GuyNeural" if no voice is set
+    const style = state.get("$ExpressStyle") || "friendly";
 
     const ssml = `
     <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
@@ -58,42 +56,4 @@ class Speech extends TreeBase {
 
 TreeBase.register(Speech, "Speech");
 
-class VoiceSelect extends HTMLSelectElement {
-  constructor() {
-    super();
-  }
-  connectedCallback() {
-    this.addVoices();
-  }
-
-  async addVoices() {
-    const voices = await getVoices();
-    const current = this.getAttribute("value");
-    for (const voice of voices) {
-      const item = html.node`<option value=${voice.voiceURI} ?selected=${voice.voiceURI == current}>${voice.name}</option>`;
-      this.add(/** @type {HTMLOptionElement} */ (item));
-    }
-  }
-}
-customElements.define("select-voice", VoiceSelect, { extends: "select" });
-
-/** @type{SpeechSynthesisVoice[]} */
-let voices = [];
-
-/**
- * Promise to return voices
- *
- * @return {Promise<SpeechSynthesisVoice[]>} Available voices
- */
-function getVoices() {
-  return new Promise(function (resolve) {
-    // iOS won't fire the voiceschanged event so we have to poll for them
-    function f() {
-      voices = (voices.length && voices) || speechSynthesis.getVoices();
-      if (voices.length) resolve(voices);
-      else setTimeout(f, 100);
-    }
-    f();
-  });
-}
 
