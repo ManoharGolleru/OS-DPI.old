@@ -726,8 +726,6 @@ export class Voice extends Prop {
         }}
       >
         <option value="">Default</option>
-        <option value="en-US-GuyNeural">Guy</option>
-        <option value="en-US-JaneNeural">Jane</option>
       </select>`
     );
   }
