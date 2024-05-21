@@ -1,4 +1,3 @@
-
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import { strip } from "./display";
 import { TreeBase } from "./treebase";
@@ -13,7 +12,7 @@ class Speech extends TreeBase {
 
   constructor() {
     super();
-    this.speechConfig = sdk.SpeechConfig.fromSubscription('25d626bb957d4ae0801f224ed52e04dd', 'eastus');
+    this.speechConfig = sdk.SpeechConfig.fromSubscription('YOUR_SUBSCRIPTION_KEY', 'YOUR_REGION');
     this.speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3; // Using MP3 format with appropriate bitrate
     this.audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
     this.synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, this.audioConfig);
@@ -29,6 +28,9 @@ class Speech extends TreeBase {
     const message = state.get("$Speak");
     const voice = state.get("$VoiceURI") || "en-US-GuyNeural"; // Default to "en-US-GuyNeural" if no voice is set
     const style = state.get("$ExpressStyle") || "friendly";
+
+    console.log("Using voice:", voice); // Debugging log
+    console.log("Message:", message); // Debugging log
 
     const ssml = `
     <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
@@ -59,6 +61,7 @@ class Speech extends TreeBase {
     const { stateName, voiceURI } = this.props;
     const { state } = Globals;
     if (state.hasBeenUpdated(stateName) || state.hasBeenUpdated(voiceURI)) {
+      console.log("State updated, speaking now..."); // Debugging log
       this.speak();
     }
     return this.empty;
