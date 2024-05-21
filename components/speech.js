@@ -1,3 +1,4 @@
+
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import { strip } from "./display";
 import { TreeBase } from "./treebase";
@@ -7,7 +8,7 @@ import * as Props from "./props";
 
 class Speech extends TreeBase {
   stateName = new Props.String("$Speak");
-  voiceURI = new Props.Voice("$VoiceURI", "en-US-GuyNeural"); // Default voice URI
+  voiceURI = new Props.Voice("$VoiceURI", "en-US-GuyNeural"); // Default to Guy
   expressStyle = new Props.String("$ExpressStyle", "friendly"); // Default expression style
 
   constructor() {
@@ -66,4 +67,3 @@ class Speech extends TreeBase {
 
 TreeBase.register(Speech, "Speech");
 
-// Ensure there is no default export since it's not required
