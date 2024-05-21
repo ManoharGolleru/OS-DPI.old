@@ -12,7 +12,8 @@ class Speech extends TreeBase {
 
   constructor() {
     super();
-    this.speechConfig = sdk.SpeechConfig.fromSubscription('25d626bb957d4ae0801f224ed52e04dd', 'eastus');
+    this.speechConfig = sdk.SpeechConfig.fromSubscription('YOUR_SUBSCRIPTION_KEY', 'YOUR_REGION');
+    this.speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Riff16Khz16BitMonoPcm; // Set output format to WAV
     this.audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
     this.synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, this.audioConfig);
   }
@@ -32,16 +33,20 @@ class Speech extends TreeBase {
       </voice>
     </speak>`;
 
-    this.synthesizer.speakSsmlAsync(ssml, result => {
-      if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
-        console.log("Speech synthesized successfully");
-      } else if (result.reason === sdk.ResultReason.Canceled) {
-        const cancellationDetails = sdk.SpeechSynthesisCancellationDetails.fromResult(result);
-        console.error("Speech synthesis canceled:", cancellationDetails.reason, cancellationDetails.errorDetails);
+    this.synthesizer.speakSsmlAsync(
+      ssml,
+      result => {
+        if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
+          console.log("Speech synthesized successfully");
+        } else if (result.reason === sdk.ResultReason.Canceled) {
+          const cancellationDetails = sdk.SpeechSynthesisCancellationDetails.fromResult(result);
+          console.error("Speech synthesis canceled:", cancellationDetails.reason, cancellationDetails.errorDetails);
+        }
+      },
+      error => {
+        console.error("An error occurred:", error);
       }
-    }, error => {
-      console.error("An error occurred:", error);
-    });
+    );
   }
 
   template() {
@@ -56,4 +61,4 @@ class Speech extends TreeBase {
 
 TreeBase.register(Speech, "Speech");
 
-
+export default Speech;
