@@ -721,8 +721,7 @@ export class Voice extends Prop {
         onchange=${(/** @type {InputEventWithTarget} */ event) => {
           this.value = event.target.value;
           this.update();
-          Globals.state.set("$VoiceURI", this.value); // Update the global state
-          console.log("Voice changed to:", this.value); // Debugging log
+          
         }}
       >
         <option value="">Default</option>
