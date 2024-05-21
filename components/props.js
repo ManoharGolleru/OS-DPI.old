@@ -722,10 +722,13 @@ export class Voice extends Prop {
         }}
       >
         <option value="">Default</option>
-      </select>`,
+        <option value="en-US-GuyNeural">Guy</option>
+        <option value="en-US-JaneNeural">Jane</option>
+      </select>`
     );
   }
 }
+
 
 export class ADate extends Prop {
   value = "";
