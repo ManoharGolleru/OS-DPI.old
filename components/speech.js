@@ -7,7 +7,7 @@ import * as Props from "./props"; // Correct import
 
 class Speech extends TreeBase {
   stateName = new Props.String("$Speak");
-  voiceURI = new Props.Voice("$VoiceURI", "en-US-GuyNeural"); // Default to Guy
+  voiceURI = new Props.Voice("$VoiceURI", "en-US-DavisNeural"); // Default to Guy
   expressStyle = new Props.String("$ExpressStyle", "friendly"); // Default expression style
 
   constructor() {
@@ -26,7 +26,7 @@ class Speech extends TreeBase {
   async speak() {
     const { state } = Globals;
     const message = state.get("$Speak");
-    const voice = state.get("$VoiceURI") || "en-US-GuyNeural"; // Default to "en-US-GuyNeural" if no voice is set
+    const voice = state.get("$VoiceURI") || "en-US-DavisNeural"; // Default to "en-US-GuyNeural" if no voice is set
     const style = state.get("$ExpressStyle") || "friendly";
 
     console.log("Using voice:", voice); // Debugging log
@@ -67,5 +67,3 @@ class Speech extends TreeBase {
 }
 
 TreeBase.register(Speech, "Speech");
-
-// Ensure there is no default export since it's not required
