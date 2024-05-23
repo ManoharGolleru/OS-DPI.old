@@ -22,9 +22,9 @@ class Button extends TreeBase {
   }
 
   handleKeyEvent(event) {
-    const { name } = this.props;
+    const { label } = this.props;
     // Toggle active state based on key events
-    if (event.access && event.access.name === name) {
+    if (event.access && event.access.label === label) {
       if (event.type === "keydown") {
         this.isActive = true;
       } else if (event.type === "keyup") {
@@ -50,8 +50,8 @@ class Button extends TreeBase {
           ComponentName: this.props.name,
           ComponentType: this.constructor.name,
         }}
-        @focus=${() => keyEvent$.next({ type: 'keydown', access: { name: name }})}
-        @blur=${() => keyEvent$.next({ type: 'keyup', access: { name: name }})}
+        @focus=${() => keyEvent$.next({ type: 'keydown', access: { label: label }})}
+        @blur=${() => keyEvent$.next({ type: 'keyup', access: { label: label }})}
       >
         ${label}
       </button>`
@@ -67,4 +67,5 @@ class Button extends TreeBase {
   }
 }
 TreeBase.register(Button, "Button");
+
 
