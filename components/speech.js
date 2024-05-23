@@ -12,6 +12,10 @@ class Speech extends TreeBase {
 
   constructor() {
     super();
+    this.initSynthesizer();
+  }
+
+  initSynthesizer() {
     this.speechConfig = sdk.SpeechConfig.fromSubscription('25d626bb957d4ae0801f224ed52e04dd', 'eastus');
     this.speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3; // Using MP3 format with appropriate bitrate
     this.audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
@@ -32,7 +36,7 @@ class Speech extends TreeBase {
   async speak() {
     if (this.isSpeaking) {
       console.log("Stopping previous synthesis");
-      await this.stopSynthesis(); // Ensure previous synthesis is stopped
+      await this.stopSynthesis();
       this.startSynthesis();
     } else {
       this.startSynthesis();
@@ -54,6 +58,8 @@ class Speech extends TreeBase {
   }
 
   startSynthesis() {
+    if (this.isSpeaking) return; // Ensure no overlapping synthesis
+
     this.isSpeaking = true;
 
     const { state } = Globals;
@@ -91,6 +97,19 @@ class Speech extends TreeBase {
     );
   }
 
+  disconnectedCallback() {
+    if (this.isSpeaking) {
+      this.synthesizer.stopSpeakingAsync(() => {
+        console.log("Synthesizer stopped on component disconnect");
+        this.isSpeaking = false;
+      }, error => {
+        console.error("Error stopping synthesizer on component disconnect", error);
+        this.isSpeaking = false;
+      });
+    }
+    this.synthesizer.close();
+  }
+
   template() {
     const { stateName, voiceURI } = this.props; // Removed expressStyle from here
     const { state } = Globals;
@@ -102,4 +121,5 @@ class Speech extends TreeBase {
 }
 
 TreeBase.register(Speech, "Speech");
+
 
