@@ -1,3 +1,5 @@
+
+
 // vite.config.js
 import { defineConfig } from "vite";
 import path from "path";
@@ -37,4 +39,10 @@ export default defineConfig({
   define: {
     APP_VERSION: version,
   },
+  server: {
+    hmr: {
+      overlay: false
+    }
+  }
 });
+
