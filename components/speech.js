@@ -16,7 +16,7 @@ class Speech extends TreeBase {
   }
 
   initSynthesizer() {
-    this.speechConfig = sdk.SpeechConfig.fromSubscription('e06a1f5edcf44606b837605cdc1cc79a', 'eastus');
+    this.speechConfig = sdk.SpeechConfig.fromSubscription('c7d8e36fdf414cbaae05819919fd416d', 'eastus');
     this.speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3; // Using MP3 format with appropriate bitrate
     this.audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
     this.synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, this.audioConfig);
