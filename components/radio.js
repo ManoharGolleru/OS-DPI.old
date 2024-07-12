@@ -16,7 +16,8 @@ TreeBase.register(Option, "Option");
 class Radio extends TreeBase {
   scale = new Props.Float(1);
   label = new Props.String("");
-  stateName = new Props.String("$radio");
+  primaryStateName = new Props.String("$radio");
+  secondaryStateName = new Props.String("$secondaryRadio");
   unselected = new Props.Color("lightgray");
   selected = new Props.Color("pink");
 
@@ -43,7 +44,7 @@ class Radio extends TreeBase {
       !filters.length ||
       data.hasMatchingRows(
         filters,
-        state.clone({ [this.props.stateName]: option.props.value }),
+        state.clone({ [this.props.primaryStateName]: option.props.value }),
         option.cache,
       )
     );
@@ -56,20 +57,24 @@ class Radio extends TreeBase {
   handleClick({ target }) {
     if (target instanceof HTMLButtonElement) {
       const value = target.value;
-      const name = this.props.stateName;
-      Globals.state.update({ [name]: value });
+      const stateUpdates = {
+        [this.props.primaryStateName]: value,
+        [this.props.secondaryStateName]: value,
+      };
+      Globals.state.update(stateUpdates);
     }
   }
 
   template() {
     const { state } = Globals;
-    const stateName = this.props.stateName;
-    let current = state.get(stateName);
+    const primaryStateName = this.props.primaryStateName;
+    const secondaryStateName = this.props.secondaryStateName;
+    let current = state.get(primaryStateName);
     const choices = this.options.map((child, index) => {
       const disabled = !this.valid(/** @type {Option}*/ (child));
-      if (stateName && !current && !disabled && child.props.value) {
+      if (primaryStateName && !current && !disabled && child.props.value) {
         current = child.props.value;
-        state.update({ [stateName]: current });
+        state.update({ [primaryStateName]: current, [secondaryStateName]: current });
       }
       const color =
         child.props.value == current || (!current && index == 0)
@@ -85,7 +90,13 @@ class Radio extends TreeBase {
           label: child.props.name,
         }}
         click
-        onClick=${() => state.update({ [stateName]: child.props.value })}
+        onClick=${() => {
+          const stateUpdates = {
+            [primaryStateName]: child.props.value,
+            [secondaryStateName]: child.props.value,
+          };
+          state.update(stateUpdates);
+        }}
       >
         ${child.props.name}
       </button>`;
@@ -102,7 +113,7 @@ class Radio extends TreeBase {
   }
 
   get name() {
-    return this.props.name || this.props.label || this.props.stateName;
+    return this.props.name || this.props.label || this.props.primaryStateName;
   }
 
   settingsDetails() {
@@ -144,3 +155,4 @@ class Radio extends TreeBase {
   }
 }
 TreeBase.register(Radio, "Radio");
+
