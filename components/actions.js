@@ -5,6 +5,7 @@ import { DesignerPanel } from "./designer";
 import "css/actions.css";
 import Globals from "app/globals";
 import { Functions } from "app/eval";
+import { DownloadCSV } from "./logger"; // Import the DownloadCSV function
 
 export class Actions extends DesignerPanel {
   name = new Props.String("Actions");
@@ -62,9 +63,8 @@ export class Actions extends DesignerPanel {
    * @param {Object} data - data associated with the event
    */
   applyRules(origin, event, data) {
-    // console.trace({ origin, event, data });
     this.last = { origin, event, data, rule: null };
-    // first for the event then for any that got queued.
+
     for (;;) {
       const context = { ...Functions, state: Globals.state, ...data };
       for (const rule of this.children) {
@@ -76,6 +76,8 @@ export class Actions extends DesignerPanel {
         );
         if (result) {
           this.last.rule = rule;
+
+          // Update state
           const patch = Object.fromEntries(
             rule.updates.map((update) => [
               update.props.stateName,
@@ -83,6 +85,12 @@ export class Actions extends DesignerPanel {
             ]),
           );
           Globals.state.update(patch);
+
+          // Trigger the DownloadCSV function if $triggerDownloadCSV state is updated
+          if (patch['$triggerDownloadCSV'] === true || patch['$triggerDownloadCSV'] === 1) {
+            DownloadCSV();
+          }
+
           break;
         }
       }
