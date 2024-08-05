@@ -2,7 +2,7 @@ import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import { TreeBase } from "./treebase";
 import { html } from "uhtml";
 import Globals from "app/globals";
-import * as Props from "./props"; // Correct import
+import * as Props from "./props";
 
 class Speech extends TreeBase {
   stateName = new Props.String("$Speak");
@@ -15,6 +15,10 @@ class Speech extends TreeBase {
     this.initSynthesizer();
   }
 
+  logWithTimestamp(message) {
+    console.log(`[${new Date().toISOString()}] ${message}`);
+  }
+
   initSynthesizer() {
     this.speechConfig = sdk.SpeechConfig.fromSubscription('c7d8e36fdf414cbaae05819919fd416d', 'eastus');
     this.speechConfig.speechSynthesisOutputFormat = sdk.SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3; // Using MP3 format with appropriate bitrate
@@ -22,39 +26,25 @@ class Speech extends TreeBase {
     this.synthesizer = new sdk.SpeechSynthesizer(this.speechConfig, this.audioConfig);
 
     // Adding logging for debug purposes
-    this.synthesizer.synthesisStarted = (s, e) => console.log("Synthesis started");
+    this.synthesizer.synthesisStarted = (s, e) => this.logWithTimestamp("Synthesis started");
     this.synthesizer.synthesisCompleted = (s, e) => {
-      console.log("Synthesis completed");
+      this.logWithTimestamp("Synthesis completed");
       this.isSpeaking = false; // Reset speaking flag
+      this.initSynthesizer(); // Re-initialize the synthesizer after each synthesis
     };
     this.synthesizer.synthesisCanceled = (s, e) => {
-      console.error("Synthesis canceled", e);
+      this.logWithTimestamp(`Synthesis canceled: ${e.reason}`);
       this.isSpeaking = false; // Reset speaking flag
+      this.initSynthesizer(); // Re-initialize the synthesizer after each synthesis
     };
   }
 
   async speak() {
     if (this.isSpeaking) {
-      console.log("Stopping previous synthesis");
-      await this.stopSynthesis();
-      this.startSynthesis();
-    } else {
-      this.startSynthesis();
-    }
-  }
-
-  async stopSynthesis() {
-    return new Promise((resolve) => {
+      this.logWithTimestamp("Cancelling current speech synthesis.");
       this.synthesizer.close();
       this.isSpeaking = false;
-      this.initSynthesizer(); // Reinitialize the synthesizer
-      console.log("Previous synthesis stopped");
-      resolve();
-    });
-  }
-
-  startSynthesis() {
-    if (this.isSpeaking) return; // Ensure no overlapping synthesis
+    }
 
     this.isSpeaking = true;
 
@@ -63,41 +53,54 @@ class Speech extends TreeBase {
     const voice = state.get("$VoiceURI") || "en-US-DavisNeural"; // Default to "en-US-DavisNeural"
     const style = state.get("$ExpressStyle") || "friendly";
 
-    console.log("Using voice:", voice); // Debugging log
+    if (!message) {
+      this.logWithTimestamp("No message to speak.");
+      this.isSpeaking = false; // Reset speaking flag
+      return;
+    }
+
+    this.logWithTimestamp(`Using voice: ${voice}, style: ${style}, message: ${message}`);
 
     const ssml = `
-    <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
-      <voice name="${voice}">
-        <mstts:express-as style="${style}">
-          ${message}
-        </mstts:express-as>
-      </voice>
-    </speak>`;
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
+        <voice name="${voice}">
+          <mstts:express-as style="${style}">
+            ${message}
+          </mstts:express-as>
+        </voice>
+      </speak>`;
 
-    this.synthesizer.speakSsmlAsync(
-      ssml,
-      result => {
-        if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
-          console.log("Speech synthesized successfully");
+    try {
+      this.synthesizer.speakSsmlAsync(
+        ssml,
+        result => {
+          if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
+            this.logWithTimestamp("Speech synthesized successfully");
+          } else if (result.reason === sdk.ResultReason.Canceled) {
+            const cancellationDetails = sdk.SpeechSynthesisCancellationDetails.fromResult(result);
+            this.logWithTimestamp(`Speech synthesis canceled: ${cancellationDetails.reason}, ${cancellationDetails.errorDetails}`);
+          }
           this.isSpeaking = false; // Reset speaking flag
-        } else if (result.reason === sdk.ResultReason.Canceled) {
-          const cancellationDetails = sdk.SpeechSynthesisCancellationDetails.fromResult(result);
-          console.error("Speech synthesis canceled:", cancellationDetails.reason, cancellationDetails.errorDetails);
+          this.initSynthesizer(); // Re-initialize the synthesizer after each synthesis
+        },
+        error => {
+          this.logWithTimestamp(`An error occurred: ${error}`);
           this.isSpeaking = false; // Reset speaking flag
+          this.initSynthesizer(); // Re-initialize the synthesizer after each synthesis
         }
-      },
-      error => {
-        console.error("An error occurred:", error);
-        this.isSpeaking = false; // Reset speaking flag
-      }
-    );
+      );
+    } catch (error) {
+      this.logWithTimestamp(`Error in speak method: ${error}`);
+      this.isSpeaking = false; // Reset speaking flag
+      this.initSynthesizer(); // Re-initialize the synthesizer after each synthesis
+    }
   }
 
   disconnectedCallback() {
     if (this.isSpeaking) {
       this.synthesizer.close();
       this.isSpeaking = false;
-      console.log("Synthesizer stopped on component disconnect");
+      this.logWithTimestamp("Synthesizer stopped on component disconnect");
     }
   }
 
@@ -111,6 +114,8 @@ class Speech extends TreeBase {
   }
 }
 
+// Register the Speech class with the component framework
 TreeBase.register(Speech, "Speech");
+
 
 
