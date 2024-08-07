@@ -9,6 +9,8 @@ import { GridFilter } from "./gridFilter";
 class Option extends TreeBase {
   name = new Props.String("");
   value = new Props.String("");
+  selectedColor = new Props.Color("pink"); // Add selectedColor property
+  unselectedColor = new Props.Color("lightgray"); // Add unselectedColor property
   cache = {};
 }
 TreeBase.register(Option, "Option");
@@ -18,8 +20,7 @@ class Radio extends TreeBase {
   label = new Props.String("");
   primaryStateName = new Props.String("$radio");
   secondaryStateName = new Props.String("$secondaryRadio");
-  unselected = new Props.Color("lightgray");
-  selected = new Props.Color("pink");
+  lastClickedStateName = new Props.String("$LastClicked"); // Track the last clicked button
 
   allowedChildren = ["Option", "GridFilter"];
 
@@ -57,10 +58,18 @@ class Radio extends TreeBase {
   handleClick({ target }) {
     if (target instanceof HTMLButtonElement) {
       const value = target.value;
-      const stateUpdates = {
-        [this.props.primaryStateName]: value,
-        [this.props.secondaryStateName]: value,
-      };
+      const lastClicked = Globals.state.get(this.props.lastClickedStateName);
+      const stateUpdates = {};
+
+      if (lastClicked === value) {
+        stateUpdates[this.props.primaryStateName] = null;
+        stateUpdates[this.props.secondaryStateName] = null;
+      } else {
+        stateUpdates[this.props.primaryStateName] = value;
+        stateUpdates[this.props.secondaryStateName] = value;
+        stateUpdates[this.props.lastClickedStateName] = value; // Update last clicked button
+      }
+
       Globals.state.update(stateUpdates);
     }
   }
@@ -78,8 +87,8 @@ class Radio extends TreeBase {
       }
       const color =
         child.props.value == current || (!current && index == 0)
-          ? this.props.selected
-          : this.props.unselected;
+          ? child.props.selectedColor
+          : child.props.unselectedColor;
       return html`<button
         style=${styleString({ backgroundColor: color })}
         value=${child.props.value}
@@ -90,13 +99,19 @@ class Radio extends TreeBase {
           label: child.props.name,
         }}
         click
-        onClick=${() => {
-          const stateUpdates = {
-            [primaryStateName]: child.props.value,
-            [secondaryStateName]: child.props.value,
-          };
+        onClick=${this.debouncedClick(() => {
+          const stateUpdates = {};
+          const lastClicked = state.get(this.props.lastClickedStateName);
+          if (lastClicked === child.props.value) {
+            stateUpdates[primaryStateName] = null;
+            stateUpdates[secondaryStateName] = null;
+          } else {
+            stateUpdates[primaryStateName] = child.props.value;
+            stateUpdates[secondaryStateName] = child.props.value;
+            stateUpdates[this.props.lastClickedStateName] = child.props.value; // Update last clicked button
+          }
           state.update(stateUpdates);
-        }}
+        })}
       >
         ${child.props.name}
       </button>`;
@@ -132,6 +147,8 @@ class Radio extends TreeBase {
             <th>#</th>
             <th>Name</th>
             <th>Value</th>
+            <th>Selected Color</th>
+            <th>Unselected Color</th>
           </tr>
         </thead>
         <tbody>
@@ -141,6 +158,8 @@ class Radio extends TreeBase {
                 <td>${index + 1}</td>
                 <td>${option.name.input()}</td>
                 <td>${option.value.input()}</td>
+                <td>${option.selectedColor.input()}</td> <!-- Add selected color input -->
+                <td>${option.unselectedColor.input()}</td> <!-- Add unselected color input -->
               </tr>
             `,
           )}
@@ -153,6 +172,21 @@ class Radio extends TreeBase {
   settingsChildren() {
     return this.empty;
   }
+
+  /**
+   * Debounce function to ensure single event handling
+   * @param {Function} func
+   * @param {number} timeout
+   * @returns {Function}
+   */
+  debouncedClick(func, timeout = 300) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
 }
 TreeBase.register(Radio, "Radio");
+
 
