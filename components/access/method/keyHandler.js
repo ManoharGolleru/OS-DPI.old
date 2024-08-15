@@ -67,31 +67,13 @@ export class KeyHandler extends Handler {
       return !designer || !designer.contains(target);
     }
 
-    // build the debounced key event stream
+    // build the key event stream
     const keyEvents$ = /** @type RxJs.Observable<KeyboardEvent> */ (
-      // start with the key down stream
       keyDown$.pipe(
-        // merge with the key up stream
         RxJs.mergeWith(keyUp$),
-        // ignore events from the designer
         RxJs.filter((e) => notDesigner(e)),
-        // prevent default actions
         RxJs.tap((e) => e.preventDefault()),
-        // remove any repeats
-        RxJs.filter((e) => !e.repeat),
-        // group by the key
-        RxJs.groupBy((e) => e.key),
-        // process each group and merge the results
-        RxJs.mergeMap((group$) =>
-          group$.pipe(
-            // debounce flurries of events
-            RxJs.debounceTime(debounceInterval),
-            // wait for a key down
-            RxJs.skipWhile((e) => e.type != "keydown"),
-            // only output when the type changes
-            RxJs.distinctUntilKeyChanged("type"),
-          ),
-        ),
+        RxJs.filter((e) => !e.repeat),  // Still filter repeated keys
         RxJs.map((e) => {
           // add context info to event for use in the conditions and response
           /** @type {EventLike} */
@@ -113,6 +95,7 @@ export class KeyHandler extends Handler {
         }),
       )
     );
+
     method.streams[streamName] = keyEvents$;
   }
 
@@ -137,5 +120,5 @@ export class KeyHandler extends Handler {
     );
   }
 }
-TreeBase.register(KeyHandler, "KeyHandler");
 
+TreeBase.register(KeyHandler, "KeyHandler");
